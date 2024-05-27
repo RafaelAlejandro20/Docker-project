@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armaps</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: rgb(81, 82, 84)
+        }
+        h1{
+            font-weight: normal;
+            padding: 5px;
+        }
+        .mapa{
+            width: 100%;
+            background-color: rgb(240,240,240);
+        }
+        .text{
+            margin: 5px;
+            padding: 2px;
+            border: solid rgb(200,200,200);
+            border-radius: 5px;
+            width: auto;
+        }
+        main{
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            position: absolute;
+            height: 100%;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+        }
+        button{
+            width: auto;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 20px;
+            border: hidden;
+            color: rgb(255,255,255);
+            background: linear-gradient(90deg, rgb(59, 131, 255), rgb(0, 85, 255));
+        }
+        label{
+            margin-left: 5px;
+        }
+        header{
+            background-color: rgb(255,255,255);
+            padding: 2px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            box-shadow: 0px 10px 10px rgba(0,0,0,0.10);
+        }
+        .logo{
+            width: 40px;
+            height: 40px;
+        }
+        .formularios{
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .width-20{
+            width: 30%;
+        }
+        .witdh-80{
+            width: 70%;
+        }
+        .mensajes{
+            text-align: center;
+            padding: 20px;
+        }
+        .nubi{
+            width: 100%;
+        }
+        a{
+            color: rgb(255,255,255);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="logo" src="https://raw.githubusercontent.com/RafaelAlejandro20/sources/main/Armaps.svg">
+        <h1>Armaps</h1>
+    </header>
+    <main>
+        <section class="formularios width-20">
+            <form action="/" method="get">
+                <img class="nubi" src="https://raw.githubusercontent.com/RafaelAlejandro20/sources/main/nubi-feliz.png">
+                <label class="mensajes">Pero mira, encontramos una ruta increíble para ti</label>
+                <label>Ubicación de partida</label>
+                <input id="partida" class="text" value='{{np}}'>
+                <label>Ubicación de destino</label>
+                <input id="destino" class="text" value='{{nd}}'>
+                <label>Kilometros recorridos</label>
+                <input id="destino" class="text" value='{{kilometros}} km'>
+                <label>Precio de gasolina gastada</label>
+                <input id="destino" class="text" value='${{gas}}'>
+                <label>Gasolina gastada</label>
+                <input id="destino" class="text" value='{{gasto}} ltrs'>
+            </form>
+            <button><a href="/">VOLVER</a></button>
+        </section>
+        <section class="mapa width-80" id="map"></section>
+    </main>
+    <script>
+        var map = L.map('map').setView([{{ route_coordinates.0.0 }}, {{ route_coordinates.0.1 }}], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        var rutaDijkstra = [{%for coord in route_coordinates %}[{{ coord.0 }}, {{ coord.1 }}], {% endfor %}];
+        L.polyline(rutaDijkstra, {color: 'green'}).addTo(map);
+        var rutaGenetica = [{%for coord in ruta_genetica %}[{{ coord.0 }}, {{ coord.1 }}], {% endfor %}];
+        L.polyline(rutaGenetica, {color: 'red'}).addTo(map);
+        var greenIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/RafaelAlejandro20/sources/main/marker1.png',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            popupAnchor: [-3, -76]
+        });
+        var redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/RafaelAlejandro20/sources/main/marker2.png',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            popupAnchor: [-3, -76]
+        });
+        L.marker([{{ nodo_partida.0 }}, {{ nodo_partida.1 }}], {icon: greenIcon}).addTo(map).bindPopup('Partida');
+        L.marker([{{ nodo_destino.0 }}, {{ nodo_destino.1 }}], {icon: redIcon}).addTo(map).bindPopup('Destino');
+    </script>
+</body>
+</html>
